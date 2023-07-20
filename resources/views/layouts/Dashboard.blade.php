@@ -38,6 +38,10 @@
                 ->get();
             $circular = HallCircular::all();
         }
+        else if(Auth::guard('bank')->user()){
+            $notice = null;
+            $circular = null;
+        }
         else {
             $notice = HallCircular::where('dept', Auth::guard('student')->user()->dept)
                 ->orderBy('created_at', 'desc')
@@ -347,6 +351,7 @@
                 {{-- <i class="fa-solid fa-magnifying-glass text-white"></i> --}}
             </div>
             @cannot('student.dashboard')
+            @if(!Auth::guard('bank')->user())
                 @foreach ($circular as $item)
                     @if (!empty($item->hall_name) && empty($item->dept) && ($item->type=='Circular' || $item->type=='Interview'))
                         <div class="text-left"><a href="{{ route('admin.circularView', ['id' => $item->id]) }}"
@@ -360,6 +365,7 @@
                                 Circular</a></div>
                     @endif
                 @endforeach
+            @endif
             @endcannot
             @can('student.dashboard')
                 @foreach ($notice as $item2)
